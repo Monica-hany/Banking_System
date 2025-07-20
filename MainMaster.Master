@@ -1,0 +1,55 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="MainMaster.master.cs" Inherits="MiniBank.MainMaster" %>
+
+<!DOCTYPE html>
+<html>
+<head runat="server">
+    <script type="text/javascript">
+        if (!sessionStorage.getItem("TabID")) {
+            sessionStorage.setItem("TabID", self.crypto.randomUUID());
+        }
+        document.cookie = "TabID=" + sessionStorage.getItem("TabID") + "; path=/";
+    </script>
+
+    <title></title>
+    <style>
+        .header-logos {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 30px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-logos img {
+            max-height: 60px;
+            width: auto;
+        }
+        .auto-style1 {
+            width: 656px;
+            height: 233px;
+        }
+        .auto-style2 {
+            width: 392px;
+            height: 236px;
+        }
+    </style>
+    <asp:ContentPlaceHolder ID="head" runat="server" />
+ 
+
+</head>
+<body>
+    <form id="form1" runat="server">
+        
+        <!-- ✅ LOGOS PLACED OUTSIDE ContentPlaceHolder -->
+        <div class="header-logos">
+            <img src="Images/more than an internship (1).png" alt="Left Logo" class="auto-style1" />
+            <img src="Images/NBE logo.jpg" alt="Right Logo" class="auto-style2" />
+        </div>
+
+        <!-- ✅ Your actual content will be injected here -->
+        <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server" />
+
+    </form>
+</body>
+</html>
