@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web.UI;
 
 namespace MiniBank
@@ -17,7 +18,7 @@ namespace MiniBank
         protected void btnGetQuestion_Click(object sender, EventArgs e)
         {
             string email = txtEmail.Text.Trim();
-            string connStr = ConfigurationManager.ConnectionStrings["MiniBankConnection"].ConnectionString;
+            string connStr = ConfigurationManager.ConnectionStrings["MiniBankConnection"].ConnectionString; // comment
 
             using (SqlConnection conn = new SqlConnection(connStr))
             {
@@ -140,6 +141,14 @@ namespace MiniBank
 
             string email = ViewState["VerifiedEmail"].ToString();
             string newPassword = txtNewPassword.Text.Trim();
+
+            if (!IsValidPassword(newPassword))
+            {
+                lblMessage.ForeColor = System.Drawing.Color.Red;
+                lblMessage.Text = "Password must be at least 8 characters long and contain uppercase, lowercase, digit, and special character.";
+                return;
+            }
+            // Hash the new password
             string hashedPassword = HashPassword(newPassword);
 
             string connStr = ConfigurationManager.ConnectionStrings["MiniBankConnection"].ConnectionString;
@@ -168,6 +177,14 @@ namespace MiniBank
 
 
         }
+
+        private bool IsValidPassword(string password)
+        {
+            // At least 8 characters, 1 uppercase, 1 lowercase, 1 digit, 1 special character
+            string pattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$";
+            return Regex.IsMatch(password, pattern);
+        }
+
 
         // Hashing Method
         private string HashPassword(string input)

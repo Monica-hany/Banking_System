@@ -180,13 +180,18 @@
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <div style="text-align: right; margin: 20px; margin-bottom: 0;">
-        <asp:LinkButton ID="Logout_Link" runat="server" OnClick="Logout_Link_Click" Style="text-decoration: none; color: #1C5E55; font-weight: bold; font-size: 16px;">
+     <div style="text-align: right; margin: 20px; margin-bottom: 0;">
+        <asp:LinkButton 
+            ID="Logout_Link" 
+            runat="server" 
+            OnClick="Logout_Link_Click" 
+            CausesValidation="false"
+            Style="text-decoration: none; color: #1C5E55; font-weight: bold; font-size: 16px;">
             Logout
-            <img src="Images/logout.jpg"" alt="Logout" style="vertical-align: middle; width: 24px; height: 24px; margin-right: 5px;" />
-    
+            <img src="Images/logout.jpg" alt="Logout" style="vertical-align: middle; width: 24px; height: 24px; margin-right: 5px;" />
         </asp:LinkButton>
     </div>
+
 
     <div class="transfer-container">
         <!-- The message shown if there are zero active accounts -->
@@ -268,6 +273,13 @@
 
                 <!-- Submit Button -->
                 <asp:Button ID="Transfer_btn" runat="server" Text="Transfer" CssClass="asp-button" CausesValidation="true" OnClick="Transfer_btn_Click" />
+
+                <!--Back to Home page button-->
+                 <div style="display: flex; gap: 15px; margin-top: 10px;">
+                     <asp:Button ID="backToHome_btn" runat="server" Text="Back To Home"
+                     CssClass="asp-button" OnClick="backToHome_btn_Click" CausesValidation="false" />
+
+                 </div>
 
                 <!-- Success Modal -->
                 <div id="successModal" class="modal-overlay" style="display:none;">

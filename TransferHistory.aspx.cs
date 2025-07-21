@@ -92,7 +92,7 @@ namespace MiniBank
                 T.Transaction_ID, 
                 T.TimeStamp, 
                 T.Amount, 
-                LC.Currency_name AS Currency,  -- ✅ Sender's currency name
+                LC.Currency_name AS Currency,
                 LEFT(U1.Email, CHARINDEX('@', U1.Email)-1) + '@****' + ' (' + LAT1.AccountType_name + ')' AS FromAccount,
                 LEFT(U2.Email, CHARINDEX('@', U2.Email)-1) + '@****' + ' (' + LAT2.AccountType_name + ')' AS ToAccount
             FROM Transactions T
@@ -102,11 +102,10 @@ namespace MiniBank
             INNER JOIN Users U2 ON A2.User_ID = U2.User_ID
             INNER JOIN Look_AccountType LAT1 ON A1.AccountType_id = LAT1.AccountType_id
             INNER JOIN Look_AccountType LAT2 ON A2.AccountType_id = LAT2.AccountType_id
-            INNER JOIN Look_Currency LC ON A1.Currency_id = LC.Currency_id  -- ✅ Join to get currency name
-            WHERE A1.User_id = @UserId OR A2.User_id = @UserId
-            ORDER BY T.TimeStamp DESC
+            INNER JOIN Look_Currency LC ON A1.Currency_id = LC.Currency_id
+            WHERE (A1.User_id = @UserId OR A2.User_id = @UserId)
+        ";
 
-            ";
 
             DateTime fromDate, toDate;
             bool hasFrom = DateTime.TryParse(txtFromDate.Text, out fromDate);
@@ -118,6 +117,7 @@ namespace MiniBank
                 query += " AND T.TimeStamp <= @ToDate";
 
             query += " ORDER BY T.TimeStamp DESC";
+
 
             using (SqlConnection conn = new SqlConnection(connStr))
             using (SqlCommand cmd = new SqlCommand(query, conn))

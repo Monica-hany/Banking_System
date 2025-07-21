@@ -399,5 +399,10 @@ namespace MiniBank
             Session.Abandon(); // Destroys the session
             Response.Redirect("Login.aspx"); // Redirects to login page
         }
+
+        protected void backToHome_btn_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("Home.aspx");
+        }
     }
 }
