@@ -56,7 +56,6 @@ namespace MiniBank
             }
         }
 
-
         private void LoadAccountStatusFilter()
         {
             string connStr = ConfigurationManager.ConnectionStrings["MiniBankConnection"].ConnectionString;
@@ -84,7 +83,6 @@ namespace MiniBank
         {
             LoadAccountRequests();
         }
-
 
         private void LoadAccountRequests()
         {
@@ -210,13 +208,11 @@ namespace MiniBank
             }
         }
 
-       
         protected void AccountRequestsGrid_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             AccountRequestsGrid.PageIndex = e.NewPageIndex;
             LoadAccountRequests();
         }
-
 
         protected void ddlCurrencyFilter_SelectedIndexChanged(object sender, EventArgs e)
         {

@@ -330,7 +330,7 @@ namespace MiniBank
                     INSERT INTO Transactions (TimeStamp, Amount, Sender_Account_id, Receiver_Account_id)
                     VALUES (GETDATE(), @OriginalAmount, @SenderId, @ReceiverId)";
                     SqlCommand insertTransactionCmd = new SqlCommand(insertTransactionQuery, conn, transaction);
-                    insertTransactionCmd.Parameters.AddWithValue("@OriginalAmount", originalAmount); // You can log the EGP amount too if you like
+                    insertTransactionCmd.Parameters.AddWithValue("@OriginalAmount", originalAmount); // You can log the EGP amount too if you like as a future enhancement
                     insertTransactionCmd.Parameters.AddWithValue("@SenderId", fromAccountId);
                     insertTransactionCmd.Parameters.AddWithValue("@ReceiverId", toAccountId);
                     insertTransactionCmd.ExecuteNonQuery();

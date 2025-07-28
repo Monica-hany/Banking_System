@@ -122,6 +122,7 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Create_Account.aspx" />
+    <Content Include="ExtractFile.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="ForgotPassword.aspx" />
     <Content Include="Global.asax" />
@@ -219,6 +220,13 @@
     </Compile>
     <Compile Include="Create_Account.aspx.designer.cs">
       <DependentUpon>Create_Account.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ExtractFile.aspx.cs">
+      <DependentUpon>ExtractFile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ExtractFile.aspx.designer.cs">
+      <DependentUpon>ExtractFile.aspx</DependentUpon>
     </Compile>
     <Compile Include="ForgotPassword.aspx.cs">
       <DependentUpon>ForgotPassword.aspx</DependentUpon>
