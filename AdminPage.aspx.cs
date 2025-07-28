@@ -181,5 +181,159 @@ namespace MiniBank
 
         }
 
+        protected void TransactionsReport_btn_Click(object sender, EventArgs e)
+        {
+            // search for SSRS
+            Response.Redirect("TransactionsReport.aspx");
+
+
+            /*GITHUB IMPORTANT NOTES*/
+
+            /*
+                📄 ImportTransactionsFromFolder Stored Procedure
+                -------------------------------------------------
+                ⚠️ If you're using my code from GitHub, please read this carefully before running!
+
+                🛠 Purpose:
+                This SQL Server stored procedure automates the import of transaction records from multiple CSV files
+                located in a specific folder on your machine into a central table (`ImportedTransactions`). It avoids
+                duplication and returns the full set of imported records as a result.
+
+                🧩 How it works:
+                1. Sets the folder path: 'C:\Users\DELL\Desktop\MiniBank\Extracted Transaction Files\' (⚠️ update it as needed).
+                2. Uses `xp_cmdshell` to list all `.csv` files in the folder (make sure it is enabled).
+                3. Iterates over each CSV file using a SQL cursor.
+                4. For every file:
+                   - Loads its data into a temporary table (`#TempImport`) using `BULK INSERT`.
+                   - Inserts only new (distinct) rows into `ImportedTransactions`.
+                5. Cleans up all temporary objects and returns the final content of the `ImportedTransactions` table.
+
+                ✅ Requirements:
+                - The following SQL Server configuration options must be enabled:
+                    EXEC sp_configure 'show advanced options', 1;
+                    RECONFIGURE;
+                    EXEC sp_configure 'xp_cmdshell', 1;
+                    RECONFIGURE;
+
+                - All CSV files must be:
+                    • UTF-8 encoded
+                    • Semicolon-separated
+                    • Have headers on the first row
+                    • Follow the expected 9-column format:
+                        SenderName, ReceiverName, Amount, Currency, Timestamp,
+                        SenderEmail, ReceiverEmail, SenderAccountType, ReceiverAccountType
+
+                🧹 Deduplication:
+                - Prevents inserting duplicate records by using `EXCEPT` against the `ImportedTransactions` table.
+
+                🚫 Note:
+                - `xp_cmdshell` can be a security risk if not properly restricted.
+                - This code is meant for local development or controlled environments. Avoid using on production servers without necessary precautions.
+
+                🔁 Output:
+                - A result set containing all rows currently in the `ImportedTransactions` table.
+
+                🧠 Author: Monica Hany Makram
+                📅 Last Updated: July 2025
+            */
+
+
+
+            /*
+
+             CREATE TABLE ImportedTransactions (
+                 SenderName NVARCHAR(100),
+                 ReceiverName NVARCHAR(100),
+                 Amount NVARCHAR(50),
+                 Currency NVARCHAR(50),
+                 Timestamp NVARCHAR(50),
+                 SenderEmail NVARCHAR(100),
+                 ReceiverEmail NVARCHAR(100),
+                 SenderAccountType NVARCHAR(50),
+                 ReceiverAccountType NVARCHAR(50)
+             );
+
+
+             EXEC sp_configure 'show advanced options', 1;
+             RECONFIGURE;
+             EXEC sp_configure 'xp_cmdshell', 1;
+             RECONFIGURE;
+
+
+
+
+             CREATE OR ALTER PROCEDURE ImportTransactionsFromFolder
+             AS
+             BEGIN
+                 SET NOCOUNT ON;
+
+                 DECLARE @FilePath NVARCHAR(255) = 'C:\Users\DELL\Desktop\MiniBank\Extracted Transaction Files\';
+                 DECLARE @Command NVARCHAR(1000);
+                 DECLARE @FileName NVARCHAR(255);
+
+                 -- Temp table to hold filenames
+                 CREATE TABLE #FileList (Line NVARCHAR(4000));
+
+                 -- Get list of CSV files in the folder
+                 SET @Command = 'dir "' + @FilePath + '*.csv" /b';
+                 INSERT INTO #FileList
+                 EXEC xp_cmdshell @Command;
+
+                 DECLARE file_cursor CURSOR FOR
+                     SELECT Line FROM #FileList WHERE Line LIKE '%.csv';
+
+                 OPEN file_cursor;
+                 FETCH NEXT FROM file_cursor INTO @FileName;
+
+                 WHILE @@FETCH_STATUS = 0
+                 BEGIN
+                     DECLARE @FullFilePath NVARCHAR(500) = @FilePath + @FileName;
+
+                     -- Load the file into a temp table
+                     CREATE TABLE #TempImport (
+                         SenderName NVARCHAR(100),
+                         ReceiverName NVARCHAR(100),
+                         Amount NVARCHAR(50),
+                         Currency NVARCHAR(50),
+                         [Timestamp] NVARCHAR(50),
+                         SenderEmail NVARCHAR(100),
+                         ReceiverEmail NVARCHAR(100),
+                         SenderAccountType NVARCHAR(50),
+                         ReceiverAccountType NVARCHAR(50)
+                     );
+
+                     DECLARE @BulkInsertCommand NVARCHAR(1000) = '
+                     BULK INSERT #TempImport
+                     FROM ''' + @FullFilePath + '''
+                     WITH (
+                         FIELDTERMINATOR = ' + ''';''' + ',
+                         ROWTERMINATOR = ' + '''\n''' + ',
+                         FIRSTROW = 2,
+                         CODEPAGE = ''65001'',
+                         TABLOCK
+                     )';
+
+                     EXEC(@BulkInsertCommand);
+
+                     -- Insert only new (distinct) rows
+                     INSERT INTO ImportedTransactions
+                     SELECT * FROM #TempImport
+                     EXCEPT
+                     SELECT * FROM ImportedTransactions;
+
+                     DROP TABLE #TempImport;
+
+                     FETCH NEXT FROM file_cursor INTO @FileName;
+                 END
+
+                 CLOSE file_cursor;
+                 DEALLOCATE file_cursor;
+                 DROP TABLE #FileList;
+
+                 -- Return result
+                 SELECT * FROM ImportedTransactions;
+             END;*/
+        }
+
     }
 }

@@ -67,5 +67,14 @@ namespace MiniBank
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button ExtractFile_btn;
+
+        /// <summary>
+        /// TransactionsReport_btn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button TransactionsReport_btn;
     }
 }

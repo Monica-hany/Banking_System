@@ -190,6 +190,7 @@
     <Content Include="Scripts\WebForms\WebParts.js" />
     <Content Include="Scripts\WebForms\WebUIValidation.js" />
     <Content Include="Status.aspx" />
+    <Content Include="TransactionsReport.aspx" />
     <Content Include="Transfer.aspx" />
     <Content Include="TransferHistory.aspx" />
     <Content Include="UserRequests_AdminPage.aspx" />
@@ -280,6 +281,13 @@
     </Compile>
     <Compile Include="Status.aspx.designer.cs">
       <DependentUpon>Status.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="TransactionsReport.aspx.cs">
+      <DependentUpon>TransactionsReport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TransactionsReport.aspx.designer.cs">
+      <DependentUpon>TransactionsReport.aspx</DependentUpon>
     </Compile>
     <Compile Include="Transfer.aspx.cs">
       <DependentUpon>Transfer.aspx</DependentUpon>

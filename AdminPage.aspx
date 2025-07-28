@@ -69,8 +69,12 @@
                         CssClass="action-button" OnClick="AccountRequests_btn_Click" Width="306px" />
                 </div>
                 <div style="text-align:center; margin-top: 20px;">
-                    <asp:Button ID="ExtractFile_btn" runat="server" Text="Extract&#10;Transactions Report"
+                    <asp:Button ID="ExtractFile_btn" runat="server" Text="Extract&#10;Transactions File"
                         CssClass="action-button" OnClick="ExtractFile_btn_Click" Width="306px" />
+                </div>
+                <div style="text-align:center; margin-top: 20px;">
+                    <asp:Button ID="TransactionsReport_btn" runat="server" Text="Transactions Report"
+                        CssClass="action-button" Width="306px" OnClick="TransactionsReport_btn_Click" />
                 </div>
             </div>
         </ContentTemplate>
