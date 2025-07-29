@@ -1,0 +1,768 @@
+USE [master]
+GO
+/****** Object:  Database [MiniBank]    Script Date: 7/29/2025 10:03:44 AM ******/
+CREATE DATABASE [MiniBank]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'MiniBank', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\MiniBank.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'MiniBank_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\MiniBank_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT, LEDGER = OFF
+GO
+ALTER DATABASE [MiniBank] SET COMPATIBILITY_LEVEL = 160
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [MiniBank].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [MiniBank] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [MiniBank] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [MiniBank] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [MiniBank] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [MiniBank] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [MiniBank] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [MiniBank] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [MiniBank] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [MiniBank] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [MiniBank] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [MiniBank] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [MiniBank] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [MiniBank] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [MiniBank] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [MiniBank] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [MiniBank] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [MiniBank] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [MiniBank] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [MiniBank] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [MiniBank] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [MiniBank] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [MiniBank] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [MiniBank] SET RECOVERY FULL 
+GO
+ALTER DATABASE [MiniBank] SET  MULTI_USER 
+GO
+ALTER DATABASE [MiniBank] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [MiniBank] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [MiniBank] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [MiniBank] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [MiniBank] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [MiniBank] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+EXEC sys.sp_db_vardecimal_storage_format N'MiniBank', N'ON'
+GO
+ALTER DATABASE [MiniBank] SET QUERY_STORE = ON
+GO
+ALTER DATABASE [MiniBank] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)
+GO
+USE [MiniBank]
+GO
+/****** Object:  Table [dbo].[Accounts]    Script Date: 7/29/2025 10:03:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Accounts](
+	[Account_ID] [bigint] IDENTITY(1,1) NOT NULL,
+	[User_ID] [bigint] NULL,
+	[Balance] [decimal](18, 2) NULL,
+	[AccountType_id] [bigint] NULL,
+	[AccountStatus_id] [bigint] NULL,
+	[Branch_id] [bigint] NULL,
+	[Date_opened] [datetime] NULL,
+	[Date_closed] [datetime] NULL,
+	[Currency_id] [bigint] NULL,
+ CONSTRAINT [PK_Accounts] PRIMARY KEY CLUSTERED 
+(
+	[Account_ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Branches]    Script Date: 7/29/2025 10:03:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Branches](
+	[Branch_id] [bigint] IDENTITY(1,1) NOT NULL,
+	[Branch_name] [varchar](30) NULL,
+	[Location] [varchar](50) NULL,
+ CONSTRAINT [PK_Branches] PRIMARY KEY CLUSTERED 
+(
+	[Branch_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[ImportedTransactions]    Script Date: 7/29/2025 10:03:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[ImportedTransactions](
+	[SenderName] [nvarchar](100) NULL,
+	[ReceiverName] [nvarchar](100) NULL,
+	[Amount] [nvarchar](50) NULL,
+	[Currency] [nvarchar](50) NULL,
+	[Timestamp] [nvarchar](50) NULL,
+	[SenderEmail] [nvarchar](100) NULL,
+	[ReceiverEmail] [nvarchar](100) NULL,
+	[SenderAccountType] [nvarchar](50) NULL,
+	[ReceiverAccountType] [nvarchar](50) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Look_AccountStatus]    Script Date: 7/29/2025 10:03:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Look_AccountStatus](
+	[Status_id] [bigint] NOT NULL,
+	[Status_name] [varchar](20) NULL,
+ CONSTRAINT [PK_Look_AccountStatus] PRIMARY KEY CLUSTERED 
+(
+	[Status_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Look_AccountType]    Script Date: 7/29/2025 10:03:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Look_AccountType](
+	[AccountType_id] [bigint] NOT NULL,
+	[AccountType_name] [varchar](10) NULL,
+ CONSTRAINT [PK_Look_AccountType] PRIMARY KEY CLUSTERED 
+(
+	[AccountType_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Look_Currency]    Script Date: 7/29/2025 10:03:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Look_Currency](
+	[Currency_id] [bigint] IDENTITY(1,1) NOT NULL,
+	[Currency_name] [nvarchar](50) NULL,
+	[Currency_value] [decimal](18, 2) NULL,
+ CONSTRAINT [PK_Look_Currency] PRIMARY KEY CLUSTERED 
+(
+	[Currency_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Look_Secret_Questions]    Script Date: 7/29/2025 10:03:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Look_Secret_Questions](
+	[Secret_Question_id] [bigint] NOT NULL,
+	[Secret_Question_Text] [nvarchar](200) NULL,
+ CONSTRAINT [PK_Look_Secret_Questions] PRIMARY KEY CLUSTERED 
+(
+	[Secret_Question_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Look_UserStatus]    Script Date: 7/29/2025 10:03:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Look_UserStatus](
+	[UserStatus_id] [bigint] NOT NULL,
+	[UserStatus_name] [varchar](50) NULL,
+ CONSTRAINT [PK_Look_UserStatus] PRIMARY KEY CLUSTERED 
+(
+	[UserStatus_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Look_UserType]    Script Date: 7/29/2025 10:03:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Look_UserType](
+	[TypeID] [bigint] NOT NULL,
+	[TypeName] [varchar](500) NULL,
+ CONSTRAINT [PK_Look_UserType] PRIMARY KEY CLUSTERED 
+(
+	[TypeID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[temp_table]    Script Date: 7/29/2025 10:03:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[temp_table](
+	[DataLine] [nvarchar](max) NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Transactions]    Script Date: 7/29/2025 10:03:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Transactions](
+	[Transaction_id] [bigint] IDENTITY(1,1) NOT NULL,
+	[TimeStamp] [datetime] NULL,
+	[Amount] [decimal](18, 2) NULL,
+	[Sender_Account_id] [bigint] NULL,
+	[Receiver_Account_id] [bigint] NULL,
+	[IsExtracted] [bit] NULL,
+ CONSTRAINT [PK_Transaction] PRIMARY KEY CLUSTERED 
+(
+	[Transaction_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Users]    Script Date: 7/29/2025 10:03:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Users](
+	[User_id] [bigint] IDENTITY(1,1) NOT NULL,
+	[Fname] [varchar](20) NULL,
+	[Lname] [varchar](20) NULL,
+	[email] [varchar](50) NULL,
+	[password] [nvarchar](200) NULL,
+	[userType_id] [bigint] NULL,
+	[userStatus_id] [bigint] NULL,
+	[Phone_No] [varchar](11) NULL,
+	[Address] [varchar](100) NULL,
+	[Secret_Question_id] [bigint] NULL,
+	[Secret_Answer] [nvarchar](500) NULL,
+ CONSTRAINT [PK_Users_1] PRIMARY KEY CLUSTERED 
+(
+	[User_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET IDENTITY_INSERT [dbo].[Accounts] ON 
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (10, 11, CAST(50000.08 AS Decimal(18, 2)), 1, 4, 1, CAST(N'2025-07-16T16:07:58.067' AS DateTime), NULL, 1)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (11, 11, CAST(7036.25 AS Decimal(18, 2)), 2, 3, 1, CAST(N'2025-07-16T16:08:33.433' AS DateTime), NULL, 2)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (12, 13, CAST(8699.35 AS Decimal(18, 2)), 1, 3, 1, CAST(N'2025-07-17T08:43:00.073' AS DateTime), NULL, 3)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (13, 12, CAST(4500.00 AS Decimal(18, 2)), 1, 3, 1, CAST(N'2025-07-17T08:59:25.777' AS DateTime), NULL, 4)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (14, 18, CAST(1000582.99 AS Decimal(18, 2)), 1, 3, 1, CAST(N'2025-07-17T21:41:44.347' AS DateTime), NULL, 3)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (15, 9, CAST(4000.00 AS Decimal(18, 2)), 1, 3, 1, CAST(N'2025-07-18T18:35:59.407' AS DateTime), NULL, 5)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (16, 9, CAST(100.00 AS Decimal(18, 2)), 2, 2, 1, CAST(N'2025-07-18T18:36:16.780' AS DateTime), NULL, 6)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (17, 14, CAST(49965.39 AS Decimal(18, 2)), 1, 5, 1, CAST(N'2025-07-19T17:25:48.503' AS DateTime), NULL, 3)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (18, 20, CAST(9900.00 AS Decimal(18, 2)), 1, 3, 1, CAST(N'2025-07-19T17:34:20.133' AS DateTime), NULL, 2)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (19, 21, CAST(9900.00 AS Decimal(18, 2)), 1, 3, 1, CAST(N'2025-07-19T17:51:28.013' AS DateTime), NULL, 4)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (20, 22, CAST(0.01 AS Decimal(18, 2)), 1, 5, 1, CAST(N'2025-07-20T08:19:27.127' AS DateTime), NULL, 1)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (21, 22, CAST(1020.24 AS Decimal(18, 2)), 2, 3, 1, CAST(N'2025-07-20T08:19:39.820' AS DateTime), NULL, 2)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (22, 23, CAST(411.60 AS Decimal(18, 2)), 1, 3, 1, CAST(N'2025-07-20T09:28:47.143' AS DateTime), NULL, 2)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (23, 24, CAST(990.00 AS Decimal(18, 2)), 1, 3, 1, CAST(N'2025-07-20T10:06:16.103' AS DateTime), NULL, 3)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (24, 25, CAST(4900.00 AS Decimal(18, 2)), 2, 3, 1, CAST(N'2025-07-20T12:21:42.963' AS DateTime), NULL, 2)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (25, 16, CAST(8000.00 AS Decimal(18, 2)), 2, 1, 1, CAST(N'2025-07-20T12:29:00.140' AS DateTime), NULL, 4)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (26, 26, CAST(4902.02 AS Decimal(18, 2)), 1, 3, 1, CAST(N'2025-07-20T21:47:29.763' AS DateTime), NULL, 2)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (27, 26, CAST(900.00 AS Decimal(18, 2)), 2, 3, 1, CAST(N'2025-07-20T21:57:38.123' AS DateTime), NULL, 1)
+GO
+INSERT [dbo].[Accounts] ([Account_ID], [User_ID], [Balance], [AccountType_id], [AccountStatus_id], [Branch_id], [Date_opened], [Date_closed], [Currency_id]) VALUES (28, 27, CAST(990.00 AS Decimal(18, 2)), 1, 3, 1, CAST(N'2025-07-27T09:33:05.143' AS DateTime), NULL, 1)
+GO
+SET IDENTITY_INSERT [dbo].[Accounts] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Branches] ON 
+GO
+INSERT [dbo].[Branches] ([Branch_id], [Branch_name], [Location]) VALUES (1, N'Main Branch', N'Corniche, South Building.')
+GO
+INSERT [dbo].[Branches] ([Branch_id], [Branch_name], [Location]) VALUES (2, N'Sherief', N'West ElBalad, Sherief street.')
+GO
+SET IDENTITY_INSERT [dbo].[Branches] OFF
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Amir Bassem', N'Ahmed Hassabou', N'1000.00', N'Dirham', N'2025-07-18 18:38:31', N'amir@yahoo.com', N'hassabou@yahoo.com', N'Savings', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Christine Hany', N'Rola Ibrahim', N'500.00', N'GBP', N'2025-07-17 09:03:15', N'christine@yahoo.com', N'rola@yahoo.com', N'Savings', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Hany Makram', N'Monica Hany', N'100.00', N'GBP', N'2025-07-19 17:52:38', N'hany@yahoo.com', N'monicahany514@gmail.com', N'Savings', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'John Amir', N'John Amir', N'100.00', N'EGP', N'2025-07-20 22:00:46', N'john@yahoo.com', N'john@yahoo.com', N'Current', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'John Amir', N'Rola Ibrahim', N'100.00', N'USD', N'2025-07-20 21:49:51', N'john@yahoo.com', N'rola@yahoo.com', N'Savings', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Joliemarie Amir', N'Mohamed Ahmed', N'10.00', N'Euro', N'2025-07-20 10:13:35', N'joliemarie@yahoo.com', N'mohamed@gmail.com', N'Savings', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Joumana Locas', N'Ahmed Hassabou', N'9280.00', N'EGP', N'2025-07-19 17:22:40', N'joumana@yahoo.com', N'hassabou@yahoo.com', N'Savings', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Joumana Locas', N'Joumana Locas', N'100.00', N'USD', N'2025-07-16 20:23:43', N'joumana@yahoo.com', N'joumana@yahoo.com', N'Current', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Joumana Locas', N'Joumana Locas', N'26.03', N'USD', N'2025-07-16 19:51:19', N'joumana@yahoo.com', N'joumana@yahoo.com', N'Current', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Joumana Locas', N'Joumana Locas', N'452.00', N'USD', N'2025-07-16 19:44:04', N'joumana@yahoo.com', N'joumana@yahoo.com', N'Current', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Joumana Locas', N'Joumana Locas', N'500.00', N'EGP', N'2025-07-16 19:57:38', N'joumana@yahoo.com', N'joumana@yahoo.com', N'Savings', N'Current')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Joumana Locas', N'Joumana Locas', N'500.00', N'EGP', N'2025-07-16 20:16:15', N'joumana@yahoo.com', N'joumana@yahoo.com', N'Savings', N'Current')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Julia John', N'Rola Ibrahim', N'100.00', N'USD', N'2025-07-19 17:36:25', N'julia@yahoo.com', N'rola@yahoo.com', N'Savings', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Mohamed Ahmed', N'Ahmed Hassabou', N'100.00', N'USD', N'2025-07-20 09:30:42', N'mohamed@gmail.com', N'hassabou@yahoo.com', N'Savings', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Mohamed Ahmed', N'Joumana Locas', N'100.00', N'USD', N'2025-07-20 09:30:13', N'mohamed@gmail.com', N'joumana@yahoo.com', N'Savings', N'Current')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Monica Hany', N'Ahmed Hassabou', N'100.00', N'Euro', N'2025-07-19 17:27:20', N'monicahany514@gmail.com', N'hassabou@yahoo.com', N'Savings', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Monica Hany', N'Rola Ibrahim', N'50.00', N'Euro', N'2025-07-19 17:53:59', N'monicahany514@gmail.com', N'rola@yahoo.com', N'Savings', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Mostafa Aly', N'Ahmed Hassabou', N'10.00', N'EGP', N'2025-07-27 09:34:32', N'mostafa@yahoo.com', N'hassabou@yahoo.com', N'Savings', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Rola Ibrahim', N'Joumana Locas', N'100.00', N'Euro', N'2025-07-17 08:46:53', N'rola@yahoo.com', N'joumana@yahoo.com', N'Savings', N'Current')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Saif Ahmed', N'Mohamed Ahmed', N'100.00', N'USD', N'2025-07-20 12:24:35', N'saif@yahoo.com', N'mohamed@gmail.com', N'Current', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'seif shaaaban', N'seif shaaaban', N'1.00', N'USD', N'2025-07-20 08:22:08', N'seifshaaaban@gmail.com', N'seifshaaaban@gmail.com', N'Current', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'seif shaaaban', N'seif shaaaban', N'1049.39', N'EGP', N'2025-07-20 08:24:35', N'seifshaaaban@gmail.com', N'seifshaaaban@gmail.com', N'Savings', N'Current')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Joliemarie Amir', N'Ahmed Hassabou', N'10.00', N'Euro', N'2025-07-27 09:34:32', N'joliemarie@yahoo.com', N'hassabou@yahoo.com', N'Savings', N'Savings')
+GO
+INSERT [dbo].[ImportedTransactions] ([SenderName], [ReceiverName], [Amount], [Currency], [Timestamp], [SenderEmail], [ReceiverEmail], [SenderAccountType], [ReceiverAccountType]) VALUES (N'Mostafa Aly', N'Rola Ibrahim', N'10.00', N'EGP', N'2025-07-27 09:34:32', N'mostafa@yahoo.com', N'rola@yahoo.com', N'Savings', N'Savings')
+GO
+INSERT [dbo].[Look_AccountStatus] ([Status_id], [Status_name]) VALUES (1, N'Pending')
+GO
+INSERT [dbo].[Look_AccountStatus] ([Status_id], [Status_name]) VALUES (2, N'Approved')
+GO
+INSERT [dbo].[Look_AccountStatus] ([Status_id], [Status_name]) VALUES (3, N'Active')
+GO
+INSERT [dbo].[Look_AccountStatus] ([Status_id], [Status_name]) VALUES (4, N'Suspended')
+GO
+INSERT [dbo].[Look_AccountStatus] ([Status_id], [Status_name]) VALUES (5, N'Closed')
+GO
+INSERT [dbo].[Look_AccountType] ([AccountType_id], [AccountType_name]) VALUES (1, N'Savings')
+GO
+INSERT [dbo].[Look_AccountType] ([AccountType_id], [AccountType_name]) VALUES (2, N'Current')
+GO
+SET IDENTITY_INSERT [dbo].[Look_Currency] ON 
+GO
+INSERT [dbo].[Look_Currency] ([Currency_id], [Currency_name], [Currency_value]) VALUES (1, N'EGP', CAST(1.00 AS Decimal(18, 2)))
+GO
+INSERT [dbo].[Look_Currency] ([Currency_id], [Currency_name], [Currency_value]) VALUES (2, N'USD', CAST(49.40 AS Decimal(18, 2)))
+GO
+INSERT [dbo].[Look_Currency] ([Currency_id], [Currency_name], [Currency_value]) VALUES (3, N'Euro', CAST(57.31 AS Decimal(18, 2)))
+GO
+INSERT [dbo].[Look_Currency] ([Currency_id], [Currency_name], [Currency_value]) VALUES (4, N'GBP', CAST(66.13 AS Decimal(18, 2)))
+GO
+INSERT [dbo].[Look_Currency] ([Currency_id], [Currency_name], [Currency_value]) VALUES (5, N'Dirham', CAST(13.45 AS Decimal(18, 2)))
+GO
+INSERT [dbo].[Look_Currency] ([Currency_id], [Currency_name], [Currency_value]) VALUES (6, N'SAR', CAST(13.18 AS Decimal(18, 2)))
+GO
+SET IDENTITY_INSERT [dbo].[Look_Currency] OFF
+GO
+INSERT [dbo].[Look_Secret_Questions] ([Secret_Question_id], [Secret_Question_Text]) VALUES (1, N'What is your favorite teacher''s name?')
+GO
+INSERT [dbo].[Look_Secret_Questions] ([Secret_Question_id], [Secret_Question_Text]) VALUES (2, N'What was the name of your first pet?')
+GO
+INSERT [dbo].[Look_Secret_Questions] ([Secret_Question_id], [Secret_Question_Text]) VALUES (3, N'What street did you grow up on?')
+GO
+INSERT [dbo].[Look_Secret_Questions] ([Secret_Question_id], [Secret_Question_Text]) VALUES (4, N'What is your dream job title?')
+GO
+INSERT [dbo].[Look_Secret_Questions] ([Secret_Question_id], [Secret_Question_Text]) VALUES (5, N'What is the name of the hospital you were born in?')
+GO
+INSERT [dbo].[Look_Secret_Questions] ([Secret_Question_id], [Secret_Question_Text]) VALUES (6, N'What is your oldest cousin’s first name?')
+GO
+INSERT [dbo].[Look_Secret_Questions] ([Secret_Question_id], [Secret_Question_Text]) VALUES (7, N'What was the model of your first car?')
+GO
+INSERT [dbo].[Look_Secret_Questions] ([Secret_Question_id], [Secret_Question_Text]) VALUES (8, N'What was the name of your childhood best friend?')
+GO
+INSERT [dbo].[Look_UserStatus] ([UserStatus_id], [UserStatus_name]) VALUES (1, N'Pending')
+GO
+INSERT [dbo].[Look_UserStatus] ([UserStatus_id], [UserStatus_name]) VALUES (2, N'Approved')
+GO
+INSERT [dbo].[Look_UserStatus] ([UserStatus_id], [UserStatus_name]) VALUES (3, N'Rejected')
+GO
+INSERT [dbo].[Look_UserType] ([TypeID], [TypeName]) VALUES (1, N'ADMIN')
+GO
+INSERT [dbo].[Look_UserType] ([TypeID], [TypeName]) VALUES (2, N'CLIENT')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Joumana Locas;Joumana Locas;452.00;USD;2025-07-16 19:44:04;joumana@yahoo.com;joumana@yahoo.com;Current;Savings')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Joumana Locas;Joumana Locas;26.03;USD;2025-07-16 19:51:19;joumana@yahoo.com;joumana@yahoo.com;Current;Savings')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Joumana Locas;Joumana Locas;500.00;EGP;2025-07-16 19:57:38;joumana@yahoo.com;joumana@yahoo.com;Savings;Current')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Joumana Locas;Joumana Locas;500.00;EGP;2025-07-16 20:16:15;joumana@yahoo.com;joumana@yahoo.com;Savings;Current')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Joumana Locas;Joumana Locas;100.00;USD;2025-07-16 20:23:43;joumana@yahoo.com;joumana@yahoo.com;Current;Savings')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Rola Ibrahim;Joumana Locas;100.00;Euro;2025-07-17 08:46:53;rola@yahoo.com;joumana@yahoo.com;Savings;Current')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Christine Hany;Rola Ibrahim;500.00;GBP;2025-07-17 09:03:15;christine@yahoo.com;rola@yahoo.com;Savings;Savings')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Amir Bassem;Ahmed Hassabou;1000.00;Dirham;2025-07-18 18:38:31;amir@yahoo.com;hassabou@yahoo.com;Savings;Savings')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Joumana Locas;Ahmed Hassabou;9280.00;EGP;2025-07-19 17:22:40;joumana@yahoo.com;hassabou@yahoo.com;Savings;Savings')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Monica Hany;Ahmed Hassabou;100.00;Euro;2025-07-19 17:27:20;monicahany514@gmail.com;hassabou@yahoo.com;Savings;Savings')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Julia John;Rola Ibrahim;100.00;USD;2025-07-19 17:36:25;julia@yahoo.com;rola@yahoo.com;Savings;Savings')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Hany Makram;Monica Hany;100.00;GBP;2025-07-19 17:52:38;hany@yahoo.com;monicahany514@gmail.com;Savings;Savings')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Monica Hany;Rola Ibrahim;50.00;Euro;2025-07-19 17:53:59;monicahany514@gmail.com;rola@yahoo.com;Savings;Savings')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'seif shaaaban;seif shaaaban;1.00;USD;2025-07-20 08:22:08;seifshaaaban@gmail.com;seifshaaaban@gmail.com;Current;Savings')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'seif shaaaban;seif shaaaban;1049.39;EGP;2025-07-20 08:24:35;seifshaaaban@gmail.com;seifshaaaban@gmail.com;Savings;Current')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Mohamed Ahmed;Joumana Locas;100.00;USD;2025-07-20 09:30:13;mohamed@gmail.com;joumana@yahoo.com;Savings;Current')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Mohamed Ahmed;Ahmed Hassabou;100.00;USD;2025-07-20 09:30:42;mohamed@gmail.com;hassabou@yahoo.com;Savings;Savings')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Joliemarie Amir;Mohamed Ahmed;10.00;Euro;2025-07-20 10:13:35;joliemarie@yahoo.com;mohamed@gmail.com;Savings;Savings')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Saif Ahmed;Mohamed Ahmed;100.00;USD;2025-07-20 12:24:35;saif@yahoo.com;mohamed@gmail.com;Current;Savings')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'John Amir;Rola Ibrahim;100.00;USD;2025-07-20 21:49:51;john@yahoo.com;rola@yahoo.com;Savings;Savings')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'John Amir;John Amir;100.00;EGP;2025-07-20 22:00:46;john@yahoo.com;john@yahoo.com;Current;Savings')
+GO
+INSERT [dbo].[temp_table] ([DataLine]) VALUES (N'Mostafa Aly;Ahmed Hassabou;10.00;EGP;2025-07-27 09:34:32;mostafa@yahoo.com;hassabou@yahoo.com;Savings;Savings')
+GO
+SET IDENTITY_INSERT [dbo].[Transactions] ON 
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (18, CAST(N'2025-07-16T19:44:04.053' AS DateTime), CAST(452.00 AS Decimal(18, 2)), 11, 10, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (19, CAST(N'2025-07-16T19:51:19.230' AS DateTime), CAST(26.03 AS Decimal(18, 2)), 11, 10, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (20, CAST(N'2025-07-16T19:57:38.397' AS DateTime), CAST(500.00 AS Decimal(18, 2)), 10, 11, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (21, CAST(N'2025-07-16T20:16:15.477' AS DateTime), CAST(500.00 AS Decimal(18, 2)), 10, 11, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (29, CAST(N'2025-07-16T20:23:43.197' AS DateTime), CAST(100.00 AS Decimal(18, 2)), 11, 10, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (30, CAST(N'2025-07-17T08:46:53.660' AS DateTime), CAST(100.00 AS Decimal(18, 2)), 12, 11, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (31, CAST(N'2025-07-17T09:03:15.660' AS DateTime), CAST(500.00 AS Decimal(18, 2)), 13, 12, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (32, CAST(N'2025-07-18T18:38:31.223' AS DateTime), CAST(1000.00 AS Decimal(18, 2)), 15, 14, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (34, CAST(N'2025-07-19T17:22:40.223' AS DateTime), CAST(9280.00 AS Decimal(18, 2)), 10, 14, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (35, CAST(N'2025-07-19T17:27:20.093' AS DateTime), CAST(100.00 AS Decimal(18, 2)), 17, 14, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (36, CAST(N'2025-07-19T17:36:25.893' AS DateTime), CAST(100.00 AS Decimal(18, 2)), 18, 12, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (37, CAST(N'2025-07-19T17:52:38.150' AS DateTime), CAST(100.00 AS Decimal(18, 2)), 19, 17, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (38, CAST(N'2025-07-19T17:53:59.043' AS DateTime), CAST(50.00 AS Decimal(18, 2)), 17, 12, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (39, CAST(N'2025-07-20T08:22:08.863' AS DateTime), CAST(1.00 AS Decimal(18, 2)), 21, 20, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (40, CAST(N'2025-07-20T08:24:35.240' AS DateTime), CAST(1049.39 AS Decimal(18, 2)), 20, 21, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (41, CAST(N'2025-07-20T09:30:13.017' AS DateTime), CAST(100.00 AS Decimal(18, 2)), 22, 11, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (42, CAST(N'2025-07-20T09:30:42.783' AS DateTime), CAST(100.00 AS Decimal(18, 2)), 22, 14, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (43, CAST(N'2025-07-20T10:13:35.893' AS DateTime), CAST(10.00 AS Decimal(18, 2)), 23, 22, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (44, CAST(N'2025-07-20T12:24:35.570' AS DateTime), CAST(100.00 AS Decimal(18, 2)), 24, 22, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (45, CAST(N'2025-07-20T21:49:51.567' AS DateTime), CAST(100.00 AS Decimal(18, 2)), 26, 12, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (46, CAST(N'2025-07-20T22:00:46.500' AS DateTime), CAST(100.00 AS Decimal(18, 2)), 27, 26, 0)
+GO
+INSERT [dbo].[Transactions] ([Transaction_id], [TimeStamp], [Amount], [Sender_Account_id], [Receiver_Account_id], [IsExtracted]) VALUES (47, CAST(N'2025-07-27T09:34:32.317' AS DateTime), CAST(10.00 AS Decimal(18, 2)), 28, 14, 0)
+GO
+SET IDENTITY_INSERT [dbo].[Transactions] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Users] ON 
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (1, N'Monica', N'Derias', N'admin@nbe.com', N'240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 1, 2, N'1222734481', N'Bank', NULL, NULL)
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (9, N'Amir', N'Bassem', N'amir@yahoo.com', N'6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b', 2, 2, N'01234567891', N'Nasr City', 1, N'ccb711f092ac8ef1805b5045fab7e8a6189cb97ad04565e21b5fbcfc9e542e42')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (10, N'Marie', N'John', N'marie@yahoo.com', N'cdb4ee2aea69cc6a83331bbe96dc2caa9a299d21329efb0336fc02a82e1839a8', 2, 3, N'01234567891', N'Paris', 7, N'bccae4ce7be65100a8472740c829b76610a653a6816a7b88c7f7def8ae8e9b0c')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (11, N'Joumana', N'Locas', N'joumana@yahoo.com', N'cdb4ee2aea69cc6a83331bbe96dc2caa9a299d21329efb0336fc02a82e1839a8', 2, 2, N'01234567893', N'Paris', 4, N'dbc2c9ff59b9a02cb9d8b7ac5f3683456c8bdb9a81af80f24226835c8a993846')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (12, N'Christine', N'Hany', N'christine@yahoo.com', N'81a83544cf93c245178cbc1620030f1123f435af867c79d87135983c52ab39d9', 2, 2, N'01234567895', N'Canada', 3, N'350fbbeed0be2e3bf9e152d7e0f28f7c993e6f0301a927fb7521904bbf37f8bf')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (13, N'Rola', N'Ibrahim', N'rola@yahoo.com', N'd4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35', 2, 2, N'01234567891', N'Madinaty', 6, N'9af2921d3fd57fe886c9022d1fcc055d53a79e4032fa6137e397583884e1a5de')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (14, N'Monica', N'Hany', N'monicahany514@gmail.com', N'3e2d5d0dab6c1e13307a3802d7cdfc6abbf9ca2a78e3f3bb5b91bd8496232170', 2, 2, N'01222734481', N'Heliopolis, Cairo.', 2, N'95d9daee3b0998effd79f11fe4509bc010931002ee4e2ee0b736de1f8a6ae7f7')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (16, N'Patrick', N'Eskander', N'patrick@yahoo.com', N'6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b', 2, 2, N'01234567898', N'Tanta', 7, N'6e00cd562cc2d88e238dfb81d9439de7ec843ee9d0c9879d549cb1436786f975')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (17, N'Nada', N'Guirguis', N'nada@yahoo.com', N'6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b', 2, 1, N'01234567899', N'Egypt', 3, N'8846076bff08af093cc50e8c0933cffe197a8e000f76911f2e49e01a73b866ee')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (18, N'Ahmed', N'Hassabou', N'hassabou@yahoo.com', N'6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b', 2, 2, N'01200000000', N'Cairo', 4, N'830b6857946c3dc23d1a5aa4d969a1a4b3ad73220dc6730ee334824da13483d8')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (19, N'Amal', N'Gamal', N'amal@yahoo.com', N'6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b', 2, 1, N'01222734485', N'Heliopolis, Cairo.', 2, N'95d9daee3b0998effd79f11fe4509bc010931002ee4e2ee0b736de1f8a6ae7f7')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (20, N'Julia', N'John', N'julia@yahoo.com', N'6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b', 2, 2, N'01222734485', N'Cairo.', 5, N'883b8b71263ff81a74f584764bea77d561b5de6deedddf3768c1b6e2501b98e4')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (21, N'Hany', N'Makram', N'hany@yahoo.com', N'6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b', 2, 2, N'01234567893', N'Egypt', 7, N'bccae4ce7be65100a8472740c829b76610a653a6816a7b88c7f7def8ae8e9b0c')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (22, N'seif', N'shaaaban', N'seifshaaaban@gmail.com', N'5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5', 2, 2, N'01145190180', N'Nasr City', 1, N'c334d23fcd6563ab74ba2e59a5b56e3153059baa55a4c93c82ecd7ecbec30cfd')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (23, N'Mohamed', N'Ahmed', N'mohamed@gmail.com', N'6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b', 2, 2, N'01234567898', N'Egypt', 3, N'97adc7e5fd103739d95f8686baff83e39e7d48f37715811f8bdb1f2d41caef38')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (24, N'Joliemarie', N'Amir', N'joliemarie@yahoo.com', N'99ad0a6d53ef1fb8bbb1b026d819d89ae993add78dd54342eabde5546755587c', 2, 2, N'01234567893', N'New Cairo.', 5, N'e6deb10a6558650aebf4c4d95fc47c716dfb2da7350183c114041c19ae9bfcd3')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (25, N'Saif', N'Ahmed', N'saif@yahoo.com', N'bff8517328f536799baa96f7e478a9779567f142e8113499c20f86e7a5594cf4', 2, 2, N'01234567895', N'Madinaty', 4, N'7826b958b79c70626801b880405eb5111557dadceb2fee2b1ed69a18eed0c6dc')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (26, N'John', N'Amir', N'john@yahoo.com', N'52ac765f36f45edff0dc8efef40b73d28c534566cc101a40bc8ed459f853be01', 2, 2, N'01234567891', N'Madinaty', 6, N'9af2921d3fd57fe886c9022d1fcc055d53a79e4032fa6137e397583884e1a5de')
+GO
+INSERT [dbo].[Users] ([User_id], [Fname], [Lname], [email], [password], [userType_id], [userStatus_id], [Phone_No], [Address], [Secret_Question_id], [Secret_Answer]) VALUES (27, N'Mostafa', N'Aly', N'mostafa@yahoo.com', N'99ad0a6d53ef1fb8bbb1b026d819d89ae993add78dd54342eabde5546755587c', 2, 2, N'01234567891', N'Madinaty', 3, N'efcfcc12dfdc8d231e839ec5721638df744aaa4c37036422365ac579f6c5f888')
+GO
+SET IDENTITY_INSERT [dbo].[Users] OFF
+GO
+ALTER TABLE [dbo].[Transactions] ADD  DEFAULT ((0)) FOR [IsExtracted]
+GO
+ALTER TABLE [dbo].[Accounts]  WITH CHECK ADD  CONSTRAINT [FK_Accounts_Branches] FOREIGN KEY([Branch_id])
+REFERENCES [dbo].[Branches] ([Branch_id])
+GO
+ALTER TABLE [dbo].[Accounts] CHECK CONSTRAINT [FK_Accounts_Branches]
+GO
+ALTER TABLE [dbo].[Accounts]  WITH CHECK ADD  CONSTRAINT [FK_Accounts_Look_AccountStatus] FOREIGN KEY([AccountStatus_id])
+REFERENCES [dbo].[Look_AccountStatus] ([Status_id])
+GO
+ALTER TABLE [dbo].[Accounts] CHECK CONSTRAINT [FK_Accounts_Look_AccountStatus]
+GO
+ALTER TABLE [dbo].[Accounts]  WITH CHECK ADD  CONSTRAINT [FK_Accounts_Look_AccountType] FOREIGN KEY([AccountType_id])
+REFERENCES [dbo].[Look_AccountType] ([AccountType_id])
+GO
+ALTER TABLE [dbo].[Accounts] CHECK CONSTRAINT [FK_Accounts_Look_AccountType]
+GO
+ALTER TABLE [dbo].[Accounts]  WITH CHECK ADD  CONSTRAINT [FK_Accounts_Look_Currency] FOREIGN KEY([Currency_id])
+REFERENCES [dbo].[Look_Currency] ([Currency_id])
+GO
+ALTER TABLE [dbo].[Accounts] CHECK CONSTRAINT [FK_Accounts_Look_Currency]
+GO
+ALTER TABLE [dbo].[Accounts]  WITH CHECK ADD  CONSTRAINT [FK_Accounts_Users1] FOREIGN KEY([User_ID])
+REFERENCES [dbo].[Users] ([User_id])
+GO
+ALTER TABLE [dbo].[Accounts] CHECK CONSTRAINT [FK_Accounts_Users1]
+GO
+ALTER TABLE [dbo].[Transactions]  WITH CHECK ADD  CONSTRAINT [FK_Transaction_Accounts] FOREIGN KEY([Sender_Account_id])
+REFERENCES [dbo].[Accounts] ([Account_ID])
+GO
+ALTER TABLE [dbo].[Transactions] CHECK CONSTRAINT [FK_Transaction_Accounts]
+GO
+ALTER TABLE [dbo].[Transactions]  WITH CHECK ADD  CONSTRAINT [FK_Transaction_Accounts1] FOREIGN KEY([Receiver_Account_id])
+REFERENCES [dbo].[Accounts] ([Account_ID])
+GO
+ALTER TABLE [dbo].[Transactions] CHECK CONSTRAINT [FK_Transaction_Accounts1]
+GO
+ALTER TABLE [dbo].[Users]  WITH CHECK ADD  CONSTRAINT [FK_Users_Look_Secret_Questions] FOREIGN KEY([Secret_Question_id])
+REFERENCES [dbo].[Look_Secret_Questions] ([Secret_Question_id])
+GO
+ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [FK_Users_Look_Secret_Questions]
+GO
+ALTER TABLE [dbo].[Users]  WITH CHECK ADD  CONSTRAINT [FK_Users_Look_UserStatus] FOREIGN KEY([userStatus_id])
+REFERENCES [dbo].[Look_UserStatus] ([UserStatus_id])
+GO
+ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [FK_Users_Look_UserStatus]
+GO
+ALTER TABLE [dbo].[Users]  WITH CHECK ADD  CONSTRAINT [FK_Users_Look_UserType] FOREIGN KEY([userType_id])
+REFERENCES [dbo].[Look_UserType] ([TypeID])
+GO
+ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [FK_Users_Look_UserType]
+GO
+/****** Object:  StoredProcedure [dbo].[ExportTransactionsToTextFile]    Script Date: 7/29/2025 10:03:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[ExportTransactionsToTextFile]
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Step 1: Truncate the temp table
+    IF OBJECT_ID('dbo.temp_table') IS NOT NULL
+        TRUNCATE TABLE dbo.temp_table;
+
+    -- Step 2: Insert new transaction data as delimited strings
+    INSERT INTO temp_table (DataLine)
+    SELECT 
+        CONCAT_WS(';',
+            -- Sender Full Name
+            ISNULL(SU.Fname, '') + ' ' + ISNULL(SU.Lname, ''),
+            -- Receiver Full Name
+            ISNULL(RU.Fname, '') + ' ' + ISNULL(RU.Lname, ''),
+            -- Transaction Amount
+            CAST(T.Amount AS NVARCHAR),
+            -- Currency Name
+            ISNULL(C.Currency_name, ''),
+            -- Timestamp
+            CONVERT(NVARCHAR, T.TimeStamp, 120),
+            -- Sender Email
+            ISNULL(SU.email, ''),
+            -- Receiver Email
+            ISNULL(RU.email, ''),
+            -- Sender Account Type
+            ISNULL(S_AT.AccountType_name, ''),
+            -- Receiver Account Type
+            ISNULL(R_AT.AccountType_name, '') --,
+
+
+            -- Sender Balance in EGP
+           -- CAST(SA.Balance * C.Currency_value AS NVARCHAR),
+            -- Receiver Balance in EGP
+          --  CAST(RA.Balance * C.Currency_value AS NVARCHAR)
+
+
+        ) AS DataLine
+    FROM Transactions T
+    -- Sender side
+    INNER JOIN Accounts SA ON T.Sender_Account_id = SA.Account_ID
+    INNER JOIN Users SU ON SA.User_ID = SU.User_id
+    INNER JOIN Look_AccountType S_AT ON SA.AccountType_id = S_AT.AccountType_id
+
+    -- Receiver side
+    INNER JOIN Accounts RA ON T.Receiver_Account_id = RA.Account_ID
+    INNER JOIN Users RU ON RA.User_ID = RU.User_id
+    INNER JOIN Look_AccountType R_AT ON RA.AccountType_id = R_AT.AccountType_id
+
+    -- Currency (same for both sender and receiver assumed)
+    INNER JOIN Look_Currency C ON SA.Currency_id = C.Currency_id
+
+    WHERE T.IsExtracted = 0;
+
+    -- Step 3: Mark transactions as extracted
+   -- UPDATE Transactions
+  --  SET IsExtracted = 1
+   -- WHERE IsExtracted = 0;
+
+   -- Return the contents of temp_table
+    SELECT DataLine FROM temp_table;
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[ImportTransactionsFromFolder]    Script Date: 7/29/2025 10:03:45 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROCEDURE [dbo].[ImportTransactionsFromFolder]
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @FilePath NVARCHAR(255) = 'C:\Users\DELL\Desktop\MiniBank\Extracted Transaction Files\';
+    DECLARE @Command NVARCHAR(1000);
+    DECLARE @FileName NVARCHAR(255);
+
+    -- Temp table to hold filenames
+    CREATE TABLE #FileList (Line NVARCHAR(4000));
+
+    -- Get list of CSV files in the folder
+    SET @Command = 'dir "' + @FilePath + '*.csv" /b';
+    INSERT INTO #FileList
+    EXEC xp_cmdshell @Command;
+
+    DECLARE file_cursor CURSOR FOR
+        SELECT Line FROM #FileList WHERE Line LIKE '%.csv';
+
+    OPEN file_cursor;
+    FETCH NEXT FROM file_cursor INTO @FileName;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        DECLARE @FullFilePath NVARCHAR(500) = @FilePath + @FileName;
+
+        -- Load the file into a temp table
+        CREATE TABLE #TempImport (
+            SenderName NVARCHAR(100),
+            ReceiverName NVARCHAR(100),
+            Amount NVARCHAR(50),
+            Currency NVARCHAR(50),
+            [Timestamp] NVARCHAR(50),
+            SenderEmail NVARCHAR(100),
+            ReceiverEmail NVARCHAR(100),
+            SenderAccountType NVARCHAR(50),
+            ReceiverAccountType NVARCHAR(50)
+        );
+
+        DECLARE @BulkInsertCommand NVARCHAR(1000) = '
+        BULK INSERT #TempImport
+        FROM ''' + @FullFilePath + '''
+        WITH (
+            FIELDTERMINATOR = ' + ''';''' + ',
+            ROWTERMINATOR = ' + '''\n''' + ',
+            FIRSTROW = 2,
+            CODEPAGE = ''65001'',
+            TABLOCK
+        )';
+
+        EXEC(@BulkInsertCommand);
+
+        -- Insert only new (distinct) rows
+        INSERT INTO ImportedTransactions
+        SELECT * FROM #TempImport
+        EXCEPT
+        SELECT * FROM ImportedTransactions;
+
+        DROP TABLE #TempImport;
+
+        FETCH NEXT FROM file_cursor INTO @FileName;
+    END
+
+    CLOSE file_cursor;
+    DEALLOCATE file_cursor;
+    DROP TABLE #FileList;
+
+    -- Return result
+    SELECT * FROM ImportedTransactions;
+END;
+GO
+USE [master]
+GO
+ALTER DATABASE [MiniBank] SET  READ_WRITE 
+GO
