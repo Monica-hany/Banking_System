@@ -20,6 +20,7 @@ namespace MiniBank
                 ChangeEmail_btn.Visible = false;
                 SearchRecepient_btn.Visible = true;
                 RecepientEmail_txtBox.Enabled = true;
+                ScheduledDate_txtBox.Text = DateTime.Today.ToString("yyyy-MM-dd");
 
                 if (Session["UserID"] == null)
                 {
@@ -310,32 +311,37 @@ namespace MiniBank
                         transaction.Rollback();
                         return;
                     }
+                    int needJob = 1; 
+                    if (DateTime.Parse(ScheduledDate_txtBox.Text).Date == DateTime.Now.Date)
+                    {
+                        needJob = 0;
+                        // Deduct from sender
+                        string deductQuery = "UPDATE Accounts SET Balance = Balance - @Amount WHERE Account_ID = @FromId";
+                        SqlCommand deductCmd = new SqlCommand(deductQuery, conn, transaction);
+                        deductCmd.Parameters.AddWithValue("@Amount", originalAmount);
+                        deductCmd.Parameters.AddWithValue("@FromId", fromAccountId);
+                        deductCmd.ExecuteNonQuery();
 
-                    // Deduct from sender
-                    string deductQuery = "UPDATE Accounts SET Balance = Balance - @Amount WHERE Account_ID = @FromId";
-                    SqlCommand deductCmd = new SqlCommand(deductQuery, conn, transaction);
-                    deductCmd.Parameters.AddWithValue("@Amount", originalAmount);
-                    deductCmd.Parameters.AddWithValue("@FromId", fromAccountId);
-                    deductCmd.ExecuteNonQuery();
+                        // Add to recipient (in their currency)
+                        string addQuery = "UPDATE Accounts SET Balance = Balance + @Amount WHERE Account_ID = @ToId";
+                        SqlCommand addCmd = new SqlCommand(addQuery, conn, transaction);
+                        addCmd.Parameters.AddWithValue("@Amount", convertedAmount);
+                        addCmd.Parameters.AddWithValue("@ToId", toAccountId);
+                        addCmd.ExecuteNonQuery();
+                    }
+                        // Insert into Transactions table
+                        string insertTransactionQuery = @"
+                        INSERT INTO Transactions (TimeStamp, Amount, Sender_Account_id, Receiver_Account_id,ValueDate,NeedsJob)
+                        VALUES (GETDATE(), @OriginalAmount, @SenderId, @ReceiverId,@ValueDate, @NeedsJob)";
+                            SqlCommand insertTransactionCmd = new SqlCommand(insertTransactionQuery, conn, transaction);
+                            insertTransactionCmd.Parameters.AddWithValue("@OriginalAmount", originalAmount); // You can log the EGP amount too if you like as a future enhancement
+                            insertTransactionCmd.Parameters.AddWithValue("@SenderId", fromAccountId);
+                            insertTransactionCmd.Parameters.AddWithValue("@ReceiverId", toAccountId);
+                            insertTransactionCmd.Parameters.AddWithValue("@ValueDate", DateTime.Parse(ScheduledDate_txtBox.Text).Date);
+                            insertTransactionCmd.Parameters.AddWithValue("@NeedsJob", needJob);
+                            insertTransactionCmd.ExecuteNonQuery();
 
-                    // Add to recipient (in their currency)
-                    string addQuery = "UPDATE Accounts SET Balance = Balance + @Amount WHERE Account_ID = @ToId";
-                    SqlCommand addCmd = new SqlCommand(addQuery, conn, transaction);
-                    addCmd.Parameters.AddWithValue("@Amount", convertedAmount);
-                    addCmd.Parameters.AddWithValue("@ToId", toAccountId);
-                    addCmd.ExecuteNonQuery();
-
-                    // Insert into Transactions table
-                    string insertTransactionQuery = @"
-                    INSERT INTO Transactions (TimeStamp, Amount, Sender_Account_id, Receiver_Account_id)
-                    VALUES (GETDATE(), @OriginalAmount, @SenderId, @ReceiverId)";
-                    SqlCommand insertTransactionCmd = new SqlCommand(insertTransactionQuery, conn, transaction);
-                    insertTransactionCmd.Parameters.AddWithValue("@OriginalAmount", originalAmount); // You can log the EGP amount too if you like as a future enhancement
-                    insertTransactionCmd.Parameters.AddWithValue("@SenderId", fromAccountId);
-                    insertTransactionCmd.Parameters.AddWithValue("@ReceiverId", toAccountId);
-                    insertTransactionCmd.ExecuteNonQuery();
-
-                    transaction.Commit();
+                            transaction.Commit();
 
                     Response.AddHeader("REFRESH", "2;URL=TransferHistory.aspx");
                     ScriptManager.RegisterStartupScript(this, GetType(), "showModal", "showSuccessModal();", true);
@@ -393,6 +399,20 @@ namespace MiniBank
             ChangeEmail_btn.Visible = false;                                 // ❌ Hide "Change Email"
             SearchRecepient_btn.Visible = true;                              // ✅ Show "Search"
         }
+
+        protected void cvScheduledDate_ServerValidate(object source, ServerValidateEventArgs args)
+        {
+            DateTime selectedDate;
+            if (DateTime.TryParse(ScheduledDate_txtBox.Text, out selectedDate))
+            {
+                args.IsValid = selectedDate.Date >= DateTime.Today;
+            }
+            else
+            {
+                args.IsValid = false;
+            }
+        }
+
 
         protected void Logout_Link_Click(object sender, EventArgs e)
         {

@@ -186,6 +186,24 @@ namespace MiniBank
         protected global::System.Web.UI.WebControls.RegularExpressionValidator revAmount;
 
         /// <summary>
+        /// ScheduledDate_txtBox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox ScheduledDate_txtBox;
+
+        /// <summary>
+        /// cvScheduledDate control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CustomValidator cvScheduledDate;
+
+        /// <summary>
         /// Transfer_btn control.
         /// </summary>
         /// <remarks>

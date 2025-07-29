@@ -271,6 +271,18 @@
                 <asp:RequiredFieldValidator ID="rfvAmount" runat="server" ControlToValidate="TransferAmount_txtBox" ErrorMessage="Transfer amount is required" CssClass="error-label" Display="Dynamic" EnableClientScript="false" EnableViewState="false" />
                 <asp:RegularExpressionValidator ID="revAmount" runat="server" ControlToValidate="TransferAmount_txtBox" ValidationExpression="^\d+(\.\d{1,2})?$" ErrorMessage="Amount must be a valid number (e.g. 100 or 100.50)" CssClass="error-label" Display="Dynamic" />
 
+                <!-- Scheduled Date -->
+                <label for="ScheduledDate_txtBox">Scheduled Transfer Date</label>
+                <asp:TextBox ID="ScheduledDate_txtBox" runat="server" CssClass="asp-input" TextMode="Date" />
+                <asp:CustomValidator 
+                    ID="cvScheduledDate" 
+                    runat="server" 
+                    ControlToValidate="ScheduledDate_txtBox" 
+                    OnServerValidate="cvScheduledDate_ServerValidate"
+                    ErrorMessage="Date must be today or in the future" 
+                    CssClass="error-label" 
+                    Display="Dynamic" />
+
                 <!-- Submit Button -->
                 <asp:Button ID="Transfer_btn" runat="server" Text="Transfer" CssClass="asp-button" CausesValidation="true" OnClick="Transfer_btn_Click" />
 
