@@ -67,5 +67,14 @@ namespace MiniBank
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button TransferHistory_btn;
+
+        /// <summary>
+        /// Insert_Transaction_File control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button Insert_Transaction_File;
     }
 }

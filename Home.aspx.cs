@@ -56,6 +56,11 @@ namespace MiniBank
             Session.Abandon(); // Destroys the session
             Response.Redirect("Login.aspx"); // Redirects to login page
         }
+
+        protected void Insert_Transaction_File_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("Insert_Transaction_File.aspx");
+        }
     }
 }
 

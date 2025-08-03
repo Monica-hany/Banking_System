@@ -70,17 +70,11 @@
             <asp:Button ID="MyAccounts_btn" runat="server" Text="My Accounts" CssClass="action-button" OnClick="MyAccounts_btn_Click" />
             <asp:Button ID="Transfer_btn" runat="server" Text="Transfer" CssClass="action-button" OnClick="Transfer_btn_Click" />
            <asp:Button ID="TransferHistory_btn" runat="server" Text="Transfer History" CssClass="action-button" OnClick="TransferHistory_btn_Click" />
-        </div>
+           <asp:Button ID="Insert_Transaction_File" runat="server" Text="Insert Transaction File" CssClass="action-button" OnClick="Insert_Transaction_File_Click" />
+
+      </div>
     </div> 
 
-        <!--
-        <div>
-            <button type="button" class="action-button" onclick="location.href='Create_Account.aspx'">Create Account</button>
-            <button type="button"  class="action-button" onclick="location.href='MyAccounts.aspx'">My Accounts</button>
-            <button type="button"  class="action-button" onclick="location.href='Transfer.aspx'">Transfer</button>
-        </div>
-
-        -->
     <script>
     window.addEventListener('pageshow', function (event) {
         if (event.persisted) {
