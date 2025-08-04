@@ -38,7 +38,7 @@ This project simulates a secure digital banking platform with the following key 
 
 ## 📽️ Demo
 
-🎥 [Watch the full demo]([https://drive.google.com/file/d/1RoIK-pb8p_Q8kxHC8w8aTaL5qpOZV-Ah/view?usp=sharing](https://drive.google.com/drive/folders/1s4NrKeYGK4Q7rtIj4UESJlJ9iZztg2zr?usp=sharing])
+🎥 [Watch the full demo]([https://drive.google.com/file/d/1RoIK-pb8p_Q8kxHC8w8aTaL5qpOZV-Ah/view?usp=sharing](https://drive.google.com/drive/folders/1s4NrKeYGK4Q7rtIj4UESJlJ9iZztg2zr?usp=sharing]) )
 
 
 ## 🧑‍💻 Team Members
